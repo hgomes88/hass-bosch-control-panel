@@ -1,0 +1,12 @@
+{
+  "domain": "integration_blueprint",
+  "name": "Integration blueprint",
+  "codeowners": [
+    "@hgomes88"
+  ],
+  "config_flow": true,
+  "documentation": "https://github.com/hgomes88/hass-integration-blueprint",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/hgomes88/hass-integration-blueprint/issues",
+  "version": "0.0.0"
+}
