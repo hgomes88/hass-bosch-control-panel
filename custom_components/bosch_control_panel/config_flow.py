@@ -7,15 +7,21 @@ from bosch.control_panel.cc880p.cp import CP
 from bosch.control_panel.cc880p.models.cp import CpVersion
 import voluptuous as vol
 
-from homeassistant.config_entries import CONN_CLASS_LOCAL_POLL, ConfigFlow
+from homeassistant.config_entries import (
+    CONN_CLASS_LOCAL_POLL,
+    ConfigFlow,
+    ConfigEntry,
+    OptionsFlow,
+)
 from homeassistant.const import CONF_BASE
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.selector import (
     SelectSelector,
     SelectSelectorConfig,
     SelectSelectorMode,
 )
+from homeassistant.data_entry_flow import FlowResult
 
 from .config_validation import SchemaType, SchemaTypes
 from .const import (  # pylint:disable=unused-import
@@ -55,7 +61,7 @@ SCHEMA_TYPES = SchemaTypes(
         ),
         CONF_POLLING_PERIOD: SchemaType(
             int, vol.All(cv.positive_int, msg="invalid_polling_period")
-        ),
+        )
     }
 )
 
@@ -97,7 +103,7 @@ def _schema(data: dict[str, Any] = None, validation=False):
             ],
             vol.Optional(CONF_POLLING_PERIOD, default=pol_period): schemas[
                 CONF_POLLING_PERIOD
-            ],
+            ]
         }
     )
 
@@ -176,6 +182,42 @@ class ControlPanelConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="user",
+            data_schema=_presentation_schema(user_input),
+            errors=errors,
+        )
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(
+        config_entry: ConfigEntry,
+    ) -> OptionsFlow:
+        """Create the options flow."""
+        return OptionsFlowHandler(config_entry)
+
+
+class OptionsFlowHandler(OptionsFlow):
+    """Handle anoptions flow for bosch_control_panel."""
+
+    def __init__(self, config_entry: ConfigEntry) -> None:
+        """Initialize options flow."""
+        self.config_entry = config_entry
+
+    async def async_step_init(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Manage the options."""
+        _LOGGER.info("Async Step Init")
+        errors = {}
+
+        if user_input is not None:
+            errors = await _validate_input(self.hass, user_input)
+            if not errors:
+                return self.async_create_entry(title=TITLE, data=user_input)
+        else:
+            user_input = dict(self.config_entry.data)
+
+        return self.async_show_form(
+            step_id="init",
             data_schema=_presentation_schema(user_input),
             errors=errors,
         )

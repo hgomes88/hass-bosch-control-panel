@@ -55,6 +55,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         loop=hass.loop,
     ).start()
 
+    entry.async_on_unload(entry.add_update_listener(options_update_listener))
     hass.data[DOMAIN][entry.entry_id] = {DATA_BOSCH: _alarm}
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
@@ -69,10 +70,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     _LOGGER.info("Async Unload Entry Start")
 
-    if unload_ok := await hass.config_entries.async_unload_platforms(
-        entry,
-        PLATFORMS
-    ):
+    if unload_ok := await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
         _alarm: CP = hass.data[DOMAIN].pop(entry.entry_id)[DATA_BOSCH]
         await _alarm.stop()
         _LOGGER.info("Async Unload Entry Done")
@@ -82,19 +80,16 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return unload_ok
 
 
-async def options_update_listener(
-    hass: HomeAssistant,
-    entry: ConfigEntry
-) -> None:
+async def options_update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Update the currently available control panel.
 
     Args:
         hass (HomeAssistant): The Homeassistant object
         entry (ConfigEntry): The options needed to update the control panel
     """
-    # _alarm = hass.data[DOMAIN][entry.entry_id][DATA_BOSCH]
-    # _alarm.update_options(entry.options)
-    return
+    _LOGGER.info("Update the configuration")
+    entry.data = entry.options
+    await hass.config_entries.async_reload(entry.entry_id)
 
 
 class BoschControlPanelDevice(Entity):
