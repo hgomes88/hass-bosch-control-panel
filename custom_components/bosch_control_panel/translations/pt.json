@@ -34,8 +34,8 @@
     }
   },
   "options": {
-    "init": {
-      "user": {
+    "step": {
+      "init": {
         "title": "Configuração da Ligação",
         "description": "Configura as propriedades de ligção",
         "data": {
