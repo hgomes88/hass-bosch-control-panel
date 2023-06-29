@@ -1,0 +1,69 @@
+{
+  "title": "Painel de Controlo Bosch",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configuração da Ligação",
+        "description": "Configura as propriedades de ligção",
+        "data": {
+          "host": "Host",
+          "port": "Porta",
+          "model": "Modelo",
+          "installer_code": "Código de Instalador",
+          "polling_period": "Período de Polling"
+        },
+        "data_description": {
+          "host": "IP ou URL do servidor",
+          "port": "Número da porta",
+          "model": "Modelo do alarme",
+          "installer_code": "Código de instalador (entre 4 e 7 digitos)",
+          "polling_period": "Periodo para obter atualizações (em milissegundos)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Falha a ligar",
+      "invalid_host": "Hostname ou IP inválido",
+      "invalid_port": "Porta inválida",
+      "invalid_installer_code": "Código de instalador inválido",
+      "invalid_polling_period": "Período de polling inválido",
+      "unknown": "Erro desconhecido"
+    },
+    "abort": {
+      "already_configured_device": "Dispositivo já configurado"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Configuração da Ligação",
+        "description": "Configura as propriedades de ligção",
+        "data": {
+          "host": "Host",
+          "port": "Porta",
+          "model": "Modelo",
+          "installer_code": "Código de Instalador",
+          "polling_period": "Período de Polling"
+        },
+        "data_description": {
+          "host": "IP ou URL do servidor",
+          "port": "Número da porta",
+          "model": "Modelo do alarme",
+          "installer_code": "Código de instalador (entre 4 e 7 digitos)",
+          "polling_period": "Periodo para obter atualizações (em milissegundos)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Falha a ligar",
+      "invalid_host": "Hostname ou IP inválido",
+      "invalid_port": "Porta inválida",
+      "invalid_installer_code": "Código de instalador inválido",
+      "invalid_polling_period": "Período de polling inválido",
+      "unknown": "Erro desconhecido"
+    },
+    "abort": {
+      "already_configured_device": "Dispositivo já configurado"
+    }
+  }
+}

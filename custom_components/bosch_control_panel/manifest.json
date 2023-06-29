@@ -1,0 +1,13 @@
+{
+  "domain": "bosch_control_panel",
+  "name": "Bosch Control Panel",
+  "codeowners": ["@hgomes88"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/hgomes88/hass-bosch-control-panel/blob/main/README.md",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/hgomes88/hass-bosch-control-panel/issues",
+  "requirements": ["bosch-control-panel-cc880p==4.0.0"],
+  "version": "3.0.0"
+}

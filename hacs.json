@@ -1,6 +1,6 @@
 {
-    "name": "Integration blueprint",
-    "filename": "integration_blueprint.zip",
+    "name": "Bosch Control Panel",
+    "filename": "bosch_control_panel.zip",
     "hide_default_branch": true,
     "homeassistant": "2023.6.0",
     "render_readme": true,

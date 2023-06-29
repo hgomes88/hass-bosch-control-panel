@@ -1,5 +1,5 @@
 {
-    "name": "hgomes88/hass-integration-blueprint",
+    "name": "hgomes88/hass-bosch-control-panel",
     "image": "mcr.microsoft.com/vscode/devcontainers/python:0-3.11-bullseye",
     "postCreateCommand": "scripts/setup",
     "forwardPorts": [
