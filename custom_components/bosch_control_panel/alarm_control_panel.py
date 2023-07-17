@@ -110,6 +110,8 @@ class BoschAlarmControlPanel(
         self._alarm: CP = alarm
         self._manual_trigger: bool = False
 
+        super().__init__()
+
     @property
     def code_format(self):
         """Regex for code format or None if no code is required."""
@@ -143,11 +145,6 @@ class BoschAlarmControlPanel(
     def icon(self):
         """Return the icon."""
         return ICON
-
-    @property
-    def available(self) -> bool:
-        """Return True if entity is available."""
-        return self._alarm.control_panel.availability.available
 
     @property
     def assumed_state(self) -> bool:
@@ -216,6 +213,9 @@ class BoschAlarmControlPanel(
             DOMAIN, SERVICE_OUTPUT, self._out_service, schema=SERVICE_OUTPUT_SCHEMA
         )
         self._alarm.add_listener(self)
+        await self._update_availability(
+            self._alarm.control_panel.availability.available
+        )
 
         _LOGGER.info("Started the Bosch Control Panel")
 
@@ -338,7 +338,7 @@ class BoschAlarmControlPanel(
 
     async def on_availability_changed(self, entity: Availability):  # noqa: D102
         _LOGGER.debug("Availability changed: %s", entity)
-        await self.async_update_ha_state(force_refresh=True)
+        await self._update_availability(entity.available)
 
     async def on_siren_changed(self, entity: Siren):  # noqa: D102
         """Handle the siren status changes."""
