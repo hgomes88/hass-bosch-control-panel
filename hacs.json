@@ -2,7 +2,7 @@
     "name": "Bosch Control Panel",
     "filename": "bosch_control_panel.zip",
     "hide_default_branch": true,
-    "homeassistant": "2023.6.0",
+    "homeassistant": "2023.7.0",
     "render_readme": true,
     "zip_release": true
 }

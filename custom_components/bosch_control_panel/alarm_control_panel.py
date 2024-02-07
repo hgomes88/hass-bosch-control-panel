@@ -109,6 +109,9 @@ class BoschAlarmControlPanel(
         self._transition_state: str | None = None
         self._alarm: CP = alarm
         self._manual_trigger: bool = False
+        self._update_extra_attr()
+
+        super().__init__()
 
     @property
     def code_format(self):
@@ -145,11 +148,6 @@ class BoschAlarmControlPanel(
         return ICON
 
     @property
-    def available(self) -> bool:
-        """Return True if entity is available."""
-        return self._alarm.control_panel.availability.available
-
-    @property
     def assumed_state(self) -> bool:
         """Return True if unable to access real state of the entity."""
         return False
@@ -180,24 +178,6 @@ class BoschAlarmControlPanel(
         return self._state
 
     @property
-    def _attr_extra_state_attributes(self):
-        """Return the state attributes."""
-        c_p = self._alarm.control_panel
-        state_attr = {
-            "time": f"{c_p.time_utc.hour:02d}:{c_p.time_utc.minute:02d}:00",
-            "siren": int(c_p.siren.on),
-            "outputs": " ".join([str(int(out.on)) for _, out in c_p.outputs.items()]),
-            "zones_triggered": " ".join(
-                [str(int(zone.triggered)) for _, zone in c_p.zones.items()]
-            ),
-            "zones_enabled": " ".join(
-                [str(int(zone.enabled)) for _, zone in c_p.zones.items()]
-            ),
-        }
-
-        return state_attr
-
-    @property
     def supported_features(self) -> int:
         """Return the list of supported features."""
         return (
@@ -216,6 +196,9 @@ class BoschAlarmControlPanel(
             DOMAIN, SERVICE_OUTPUT, self._out_service, schema=SERVICE_OUTPUT_SCHEMA
         )
         self._alarm.add_listener(self)
+        await self._update_availability(
+            self._alarm.control_panel.availability.available
+        )
 
         _LOGGER.info("Started the Bosch Control Panel")
 
@@ -287,6 +270,19 @@ class BoschAlarmControlPanel(
         """
         _LOGGER.info("Arming with custom")
 
+    def _update_extra_attr(self):
+        self._attr_extra_state_attributes = {
+            "time": self._alarm.control_panel.time.time,
+            "siren": int(self._alarm.control_panel.siren.on),
+            "outputs": " ".join([str(int(out.on)) for _, out in self._alarm.control_panel.outputs.items()]),
+            "zones_triggered": " ".join(
+                [str(int(zone.triggered)) for _, zone in self._alarm.control_panel.zones.items()]
+            ),
+            "zones_enabled": " ".join(
+                [str(int(zone.enabled)) for _, zone in self._alarm.control_panel.zones.items()]
+            ),
+        }
+
     async def _change_state(self, code, transition_state):
         try:
             # Change the status to the transition state
@@ -338,7 +334,7 @@ class BoschAlarmControlPanel(
 
     async def on_availability_changed(self, entity: Availability):  # noqa: D102
         _LOGGER.debug("Availability changed: %s", entity)
-        await self.async_update_ha_state(force_refresh=True)
+        await self._update_availability(entity.available)
 
     async def on_siren_changed(self, entity: Siren):  # noqa: D102
         """Handle the siren status changes."""
@@ -374,4 +370,5 @@ class BoschAlarmControlPanel(
         self, entity: ControlPanelEntity, id: Id | None = None
     ):
         """Handle any update on the control panel."""
+        self._update_extra_attr()
         await self.async_update_ha_state(force_refresh=True)
