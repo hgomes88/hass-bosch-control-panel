@@ -60,11 +60,16 @@ class BoschAlarmZone(
         self._state = STATE_UNKNOWN
         self._attr_device_class = BinarySensorDeviceClass.MOTION
 
+        super().__init__()
+
     async def async_added_to_hass(self) -> None:
         """Initialize the zone when it is added to hass."""
         _LOGGER.info("Starting the Bosch Control Panel Zone %d", self._id)
         self._alarm.add_listener(self)
         await self.async_update_ha_state(force_refresh=True)
+        await self._update_availability(
+            self._alarm.control_panel.availability.available
+        )
         _LOGGER.info("Started the Bosch Control Panel Zone %d", self._id)
 
     async def async_will_remove_from_hass(self) -> None:
@@ -92,11 +97,6 @@ class BoschAlarmZone(
         """Return the name of the device."""
         return f"bosch_zone_{self._id}"
 
-    @property
-    def available(self) -> bool:
-        """Return True if entity is available."""
-        return self._alarm.control_panel.availability.available
-
     async def on_zone_trigger_changed(
         self, id: Id, entity: Zone
     ):  # pylint: disable=redefined-builtin
@@ -107,4 +107,4 @@ class BoschAlarmZone(
 
     async def on_availability_changed(self, entity: Availability):  # noqa: D102
         _LOGGER.debug("Availability changed: %s", entity)
-        await self.async_update_ha_state(force_refresh=True)
+        await self._update_availability(entity.available)
